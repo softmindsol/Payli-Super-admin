@@ -1,8 +1,8 @@
-// src/components/AppSidebar.jsx
-import { useCallback, useEffect, useRef, useState, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useSidebar } from "../context/SidebarContext";
 import SidebarWidget from "./SidebarWidget";
+import { MoreVertical } from "lucide-react"; // Import this
 
 // ---- bring data/icons/logo from your other file ----
 import { UsersRound } from "lucide-react";
@@ -155,7 +155,7 @@ const AppSidebar = () => {
                         <Link
                           to={sub.path}
                           className={`flex items-center text-sm px-3 py-2 rounded-md
-                            ${subActive ? "bg-white/90 text-[#0A285E]" : "text-white/85 hover:bg-white/10"}`}
+                            ${subActive ? "bg-white/95 text-[#0A285E]" : "text-white/90 hover:bg-white/10"}`}
                         >
                           {sub.name}
                         </Link>
@@ -185,12 +185,7 @@ const AppSidebar = () => {
       {/* Logo */}
       <div className={`py-8 flex ${!isExpanded && !isHovered ? "lg:justify-center" : "justify-center"}`}>
         <Link to="/">
-          {/* If you prefer your single SVG asset */}
           <img className="max-w-[126px] w-full" src={Logo} alt="Payli-Logo" />
-          {/* Or keep your light/dark pair instead:
-            <img className="dark:hidden" src="/images/logo/logo.svg" alt="Logo" width={150} height={40} />
-            <img className="hidden dark:block" src="/images/logo/logo-dark.svg" alt="Logo" width={150} height={40} />
-          */}
         </Link>
       </div>
 
@@ -206,6 +201,45 @@ const AppSidebar = () => {
         </nav>
 
         {(isExpanded || isHovered || isMobileOpen) && <SidebarWidget />}
+      </div>
+       {/* Bottom area (non-scroll) */}
+      <div className="px-5 pt-3 pb-5">
+        {(isExpanded || isHovered || isMobileOpen) && (
+          <>
+            {/* <div className="flex items-center gap-2 mb-3 text-white/90">
+              <Info className="w-4 h-4" />
+              <span className="font-medium">Customer Support</span>
+            </div> */}
+            <div className="h-px mb-3 bg-white/20" />
+          </>
+        )}
+      {/* Profile Section (added at the bottom) */}
+      <div className="px-5 pt-5 pb-3">
+        <div className="flex items-center gap-3">
+          {/* Placeholder for User Avatar */}
+          <div className="w-10 h-10 bg-gray-400 rounded-full"></div>
+          
+          {/* Placeholder for User Name */}
+          <div className="flex-1 min-w-0">
+            <div className="truncate text-[14px] font-semibold text-white">
+              John Doe
+            </div>
+            <div className="truncate text-[11px] text-white/75">
+              Admin
+            </div>
+          </div>
+
+          {/* More options (click to toggle menu) */}
+          <button
+            type="button"
+            className="p-1.5 rounded-full hover:bg-white/10 focus:outline-none"
+            aria-haspopup="menu"
+            aria-expanded={false}
+          >
+            <MoreVertical className="w-5 h-5 text-white" />
+          </button>
+        </div>
+      </div>
       </div>
     </aside>
   );

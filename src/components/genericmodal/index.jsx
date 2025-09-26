@@ -2,63 +2,43 @@ import { useEffect, useRef } from "react";
 import { useModal } from "../../context/modal/index";
 
 const Modal = () => {
-  const { isOpen, content, closeModal } = useModal();
-  const ref = useRef();
-
+  const { isOpen, content, width, closeModal } = useModal();
+  // Close on ESC
   useEffect(() => {
-    const handler = (e) => {
-      // Only close if clicking on the backdrop (the outer div), not on the modal content
-      if (e.target.classList.contains("backdrop-blur-sm")) {
-        closeModal();
-      }
-    };
-
-    if (isOpen) {
-      document.addEventListener("click", handler);
-    }
-
-    return () => {
-      document.removeEventListener("click", handler);
-    };
-  }, [closeModal, isOpen]);
-
-  // Handle escape key
-  useEffect(() => {
-    const handleEscape = (e) => {
-      if (e.key === "Escape" && isOpen) {
-        closeModal();
-      }
-    };
-
-    if (isOpen) {
-      document.addEventListener("keydown", handleEscape);
-    }
-
-    return () => {
-      document.removeEventListener("keydown", handleEscape);
-    };
-  }, [closeModal, isOpen]);
+    if (!isOpen) return;
+    const onKey = (e) => e.key === "Escape" && closeModal();
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [isOpen, closeModal]);
 
   if (!isOpen) return null;
 
   return (
-    <div
-      className="fixed inset-0 flex items-center justify-center px-3 overflow-x-hidden overflow-y-auto z-99999 backdrop-blur-sm bg-black/50"
-      onClick={(e) => {
-        // Close modal only if clicking on the backdrop
-        if (e.target === e.currentTarget) {
-          closeModal();
-        }
-      }}
-    >
+    <div className="fixed inset-0 z-[9999]">
+      {/* Overlay (covers whole app; blur + dim) */}
       <div
-        ref={ref}
-        id="popup-modal"
-        tabIndex="-1"
-        className="relative w-full max-w-lg bg-white rounded-lg shadow dark:bg-gray-950"
-        onClick={(e) => e.stopPropagation()}
+        className="absolute inset-0 bg-black/50 backdrop-blur-[2px]"
+        onClick={closeModal}
+        aria-hidden="true"
+      />
+
+      {/* Centered container (prevents overlay click bubbling) */}
+      <div
+        className="relative z-10 grid min-h-full p-4 place-items-center"
+        onClick={closeModal}
       >
-        <div className="max-h-[80vh] overflow-y-auto p-4">{content}</div>
+        <div
+          role="dialog"
+          aria-modal="true"
+          className="w-full rounded-2xl bg-white shadow-[0_10px_30px_rgba(0,0,0,0.25)]"
+          style={{ maxWidth: width ? `${width}px` : "540px" }}
+          onClick={(e) => e.stopPropagation()}
+        >
+          {/* Scroll inside if content is tall */}
+          <div className="max-h-[80vh] overflow-y-auto lg:p-9 md:p-2">
+            {content}
+          </div>
+        </div>
       </div>
     </div>
   );

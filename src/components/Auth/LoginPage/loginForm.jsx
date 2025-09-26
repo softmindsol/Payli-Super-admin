@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { Eye, EyeOff, ArrowRight } from "lucide-react";
 
-import { LogoBlue } from "@/assets/svgs";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import SocialLogin from "@/components/SocialLogin";
-import Divider from "@/components/Divider";
+import { LogoBlue } from "../../../assets/svgs";
+import { Button } from "../../../components/ui/button";
+import { Input } from "../../../components/ui/input";
+import SocialLogin from "../../../components/SocialLogin";
+import Divider from "../../../components/Divider";
 import RememberPassword from "../RememberPassword";
 import { Link } from "react-router-dom";
 
@@ -74,9 +74,9 @@ const LoginForm = () => {
   };
 
   return (
-    <div className="flex flex-col items-start justify-center w-full h-screen p-6">
-      <div className="w-full flex items-center justify-start">
-        <div className="xl:max-w-2xl lg:max-w-xl md:max-w-md w-full space-y-8">
+    <div className="flex flex-col items-start justify-center w-full h-screen py-6">
+      <div className="flex items-center justify-start w-full">
+        <div className="w-full space-y-8 xl:max-w-2xl lg:max-w-xl md:max-w-md">
           <div className="flex justify-center">
             <img
               className="max-w-[124px] w-full block md:hidden"
@@ -87,16 +87,16 @@ const LoginForm = () => {
 
           {/* Header */}
           <div className="text-start lg:mb-16">
-            <h2 className="text-3xl lg:text-4xl font-bold mb-1">
+            <h2 className="mb-1 text-3xl font-bold lg:text-4xl">
               Login your account
             </h2>
-            <p className="text-primary text-sm leading-tight">
+            <p className="text-sm leading-tight text-primary">
               Enter your valid email address and password to login your account.{" "}
             </p>
           </div>
 
           {/* Form */}
-          <form onSubmit={handleSubmit} className="lg:space-y-6 space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-4 lg:space-y-6">
             {/* Email Field */}
             <div className="space-y-1">
               <label
@@ -146,13 +146,13 @@ const LoginForm = () => {
                 />
                 <button
                   type="button"
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                  className="absolute inset-y-0 right-0 flex items-center pr-3"
                   onClick={() => setShowPassword(!showPassword)}
                 >
                   {showPassword ? (
-                    <EyeOff className="h-5 w-5 text-gray-400 hover:text-gray-600" />
+                    <EyeOff className="w-5 h-5 text-gray-400 hover:text-gray-600" />
                   ) : (
-                    <Eye className="h-5 w-5 text-gray-400 hover:text-gray-600" />
+                    <Eye className="w-5 h-5 text-gray-400 hover:text-gray-600" />
                   )}
                 </button>
               </div>
@@ -174,7 +174,7 @@ const LoginForm = () => {
             >
               {isLoading ? (
                 <>
-                  <div className="animate-spin rounded-full h-5 w-5 mr-1 border-b-2 border-black"></div>
+                  <div className="w-5 h-5 mr-1 border-b-2 border-black rounded-full animate-spin"></div>
                   <span className="text-black">Logging In...</span>
                 </>
               ) : (
@@ -186,24 +186,7 @@ const LoginForm = () => {
             </Button>
           </form>
 
-          {/* Divider */}
-          <Divider />
-
-          {/* Social Login */}
-          <SocialLogin />
-
-          {/* Sign Up Link */}
-          <div className="flex items-end justify-center">
-            <p className="text-center text-sm text-black xl:mt-20">
-              Don&apos;t have an account?{" "}
-              <Link
-                to="/onboarding"
-                className="text-base text-[#1D50AB] hover:text-blue-500 hover:underline font-semibold"
-              >
-                Create Account
-              </Link>
-            </p>
-          </div>
+          
         </div>
       </div>
     </div>

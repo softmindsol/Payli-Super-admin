@@ -1,11 +1,12 @@
 import React from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
-import { useModal } from "../../../context/modal/index";
+import { useModal } from "../../../context/modal";
 import { X } from "lucide-react";
 
 const GRADIENT = "linear-gradient(90deg, #B2F0E7 -7.06%, #C9DDF9 100%)";
 
+// ⬇️ Schema isi file me
 const Schema = Yup.object({
   name: Yup.string().trim().required("Required"),
   email: Yup.string().email("Invalid email").required("Required"),
@@ -20,12 +21,13 @@ export default function AddClientModal({ onClose }) {
 
   return (
     <div>
-      {/* header */}
+      {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-xl font-semibold text-[#2E2E2E]">Add Client</h2>
         <button
           className="p-2 rounded-full hover:bg-slate-100"
           onClick={onClose || closeModal}
+          aria-label="Close"
         >
           <X className="w-5 h-5" />
         </button>
@@ -83,6 +85,7 @@ export default function AddClientModal({ onClose }) {
               </div>
             ))}
 
+            {/* Actions */}
             <div className="flex gap-4 mt-6">
               <button
                 type="button"

@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { ModalProvider } from "@/context/modal/index";
-import ModalRoot from "@/components/genericmodal/index";
+import { ModalProvider } from "../../../context/modal/index";
+import ModalRoot from "../../../components/genericmodal/index";
 
 import EcommerceMetrics from "../../../components/Dashboard/EcommerceMetrics";
 import EmployeeList from "../../../components/Dashboard/EmployeeList";

@@ -1,14 +1,4 @@
-import React from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { useTranslation } from "react-i18next";
-import {
-  setLanguage,
-  toggleLanguage,
-  selectCurrentLanguage,
-  selectAvailableLanguages,
-  selectLanguageLabels,
-  selectLanguageFlags,
-} from "../../store/features/language/language.slice";
+import React, { useState, useEffect } from "react";
 import { Button } from "../ui/button";
 import {
   DropdownMenu,
@@ -18,105 +8,76 @@ import {
 } from "../ui/dropdown-menu";
 import { ChevronDown } from "lucide-react";
 
-const LanguageToggle = ({ variant = "dropdown", className = "" }) => {
-  const dispatch = useDispatch();
-  const { t } = useTranslation();
+// Static language list with flags
+const LANGS = [
+  { code: "en", label: "English", flag: "🇬🇧" },
+  { code: "nl", label: "Dutch", flag: "🇳🇱" },
+  { code: "fr", label: "French", flag: "🇫🇷" },
+  // Add more languages as needed
+];
 
-  const currentLanguage = useSelector(selectCurrentLanguage);
-  const availableLanguages = useSelector(selectAvailableLanguages);
-  const languageLabels = useSelector(selectLanguageLabels);
-  const languageFlags = useSelector(selectLanguageFlags);
+export default function LanguageToggle({ variant = "dropdown", className = "" }) {
+  // Get current language from localStorage or default to 'en'
+  const currentCode = localStorage.getItem("language") || "en";
+  const current = LANGS.find((l) => currentCode.startsWith(l.code)) || LANGS[0];
 
-  const handleLanguageChange = (newLanguage) => dispatch(setLanguage(newLanguage));
-  const handleToggle = () => dispatch(toggleLanguage());
+  const [language, setLanguage] = useState(current);
 
-  if (variant === "toggle") {
-    return (
-      <Button
-        variant="outline"
-        size="sm"
-        onClick={handleToggle}
-        className={`flex items-center gap-2 ${className}`}
-        title={t("common.language")}
-      >
-        <img
-          src={languageFlags[currentLanguage]}
-          alt=""
-          aria-hidden="true"
-          className="object-cover w-5 h-4"
-        />
-        <span className="hidden sm:inline">
-          {languageLabels[currentLanguage]}
-        </span>
-      </Button>
-    );
-  }
+  useEffect(() => {
+    // Persist language in localStorage
+    localStorage.setItem("language", language.code);
+  }, [language]);
+
+  const changeLanguage = (lang) => {
+    setLanguage(lang);
+  };
 
   if (variant === "compact") {
     return (
       <button
-        onClick={handleToggle}
-        className={`flex items-center gap-1 rounded-md px-2 py-1 hover:bg-gray-100 transition-colors ${className}`}
-        title={t("common.language")}
+        onClick={() => {
+          // Cycle through languages in compact mode
+          const idx = LANGS.findIndex((l) => l.code === language.code);
+          const next = LANGS[(idx + 1) % LANGS.length];
+          changeLanguage(next);
+        }}
+        className={`flex items-center gap-2 rounded-md px-2 py-1 text-sm hover:bg-gray-100 ${className}`}
+        title="Change language"
       >
-        <img
-          src={languageFlags[currentLanguage]}
-          alt=""
-          aria-hidden="true"
-          className="object-cover w-4 h-3"
-        />
-        <span className="text-xs font-medium">{currentLanguage.toUpperCase()}</span>
+        <span className="text-base">{language.flag}</span>
+        <span className="hidden sm:inline">{language.label}</span>
       </button>
     );
   }
 
-  // Default: dropdown
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button
-          variant="outline"
-          size="sm"
-          className={`flex items-center gap-2 ${className}`}
-        >
-          <img
-            src={languageFlags[currentLanguage]}
-            alt=""
-            aria-hidden="true"
-            className="object-cover w-5 h-4"
-          />
-          <span className="hidden sm:inline">
-            {languageLabels[currentLanguage]}
-          </span>
-          <span className="sm:hidden">{currentLanguage.toUpperCase()}</span>
+        <Button variant="outline" size="sm" className={`flex items-center gap-2 ${className}`}>
+          <span className="text-base">{language.flag}</span>
+          <span className="hidden sm:inline">{language.label}</span>
+          <span className="sm:hidden">{language.code.toUpperCase()}</span>
           <ChevronDown className="w-3 h-3" />
         </Button>
       </DropdownMenuTrigger>
 
-      {/* IMPORTANT: high z-index so it stacks above sticky header */}
       <DropdownMenuContent
         align="end"
         sideOffset={8}
-        className="z-[2000] min-w-[180px] rounded-xl border border-gray-200 bg-white p-1
-                   shadow-[0_12px_24px_rgba(0,0,0,.12)]"
+        className="z-[2000] min-w-[180px] rounded-xl border border-gray-200 bg-white p-1 shadow-[0_12px_24px_rgba(0,0,0,.12)]"
       >
-        {availableLanguages.map((lang) => {
-          const active = currentLanguage === lang;
+        {LANGS.map((lang) => {
+          const active = language.code === lang.code;
           return (
             <DropdownMenuItem
-              key={lang}
-              onClick={() => handleLanguageChange(lang)}
+              key={lang.code}
+              onClick={() => changeLanguage(lang)}
               className={`flex cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5
-                          focus:bg-[#E9F0FF] focus:text-[#1D50AB]
-                          ${active ? "bg-gray-100" : ""}`}
+                focus:bg-[#E9F0FF] focus:text-[#1D50AB]
+                ${active ? "bg-gray-100" : ""}`}
             >
-              <img
-                src={languageFlags[lang]}
-                alt=""
-                aria-hidden="true"
-                className="object-cover w-5 h-4"
-              />
-              <span className="flex-1">{languageLabels[lang]}</span>
+              <span className="text-base">{lang.flag}</span>
+              <span className="flex-1">{lang.label}</span>
               {active && <span className="text-sm text-blue-600">✓</span>}
             </DropdownMenuItem>
           );
@@ -124,6 +85,4 @@ const LanguageToggle = ({ variant = "dropdown", className = "" }) => {
       </DropdownMenuContent>
     </DropdownMenu>
   );
-};
-
-export default LanguageToggle;
+}

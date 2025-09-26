@@ -31,7 +31,7 @@ export default function EditEmployeeForm({ data, onSubmit }) {
   };
 
   return (
-    <div className="p-6 md:p-8">
+    <div className="">
       <h3 className="mb-6 text-[20px] font-semibold text-[#2E2E2E]">Edit Employee</h3>
 
       <Formik

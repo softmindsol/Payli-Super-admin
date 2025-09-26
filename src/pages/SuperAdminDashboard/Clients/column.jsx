@@ -35,9 +35,9 @@ export const CLIENT_COLUMNS = ({ onDelete }) => [
     width: "90px",
     render: (row) => (
       <button
-        className="px-2 py-1 text-red-600 hover:text-red-700"
+        className="rounded px-2 py-1 text-[#111827] hover:bg-gray-100"
         onClick={() => onDelete(row)}
-        title="Delete client"
+        title="More actions"
       >
         •••
       </button>

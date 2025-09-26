@@ -1,7 +1,7 @@
 // src/components/genericmodal/AddEmployeeForm/index.jsx
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
-import { useModal } from "@/context/modal/index";
+import { useModal } from "../../../context/modal/index";
 
 // Config -> fields render via map (same style as CreateOutletModal)
 const FIELDS = [

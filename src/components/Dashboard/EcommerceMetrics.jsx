@@ -1,5 +1,5 @@
 // src/components/Dashboard/EcommerceMetrics.jsx
-import { Inventory, Webshops, POS, Revenue } from "@/assets/svgs";
+import { Inventory, Webshops, POS, Revenue } from "../../assets/svgs";
 
 export default function EcommerceMetrics() {
   const metrics = [
