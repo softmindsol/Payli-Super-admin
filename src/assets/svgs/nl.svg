@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Flag" width="56" height="39" viewBox="0 0 56 39" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+        <style>
+            .cls-1 { fill: #21468b; stroke-width: 0px; }
+            .cls-2 { fill: #fff; stroke-width: 0px; }
+            .cls-3 { fill: #ae1c28; stroke-width: 0px; }
+        </style>
+    </defs>
+    <rect class="cls-1" x="0" y="26" width="56" height="13"/>
+    <rect class="cls-2" x="0" y="13" width="56" height="13"/>
+    <rect class="cls-3" x="0" width="56" height="13"/>
+</svg>
