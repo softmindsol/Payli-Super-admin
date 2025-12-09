@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Button } from "../../components/pagination/button";
+import { Button } from "../ui/button";
 
 const Pagination = ({
   currentPage,

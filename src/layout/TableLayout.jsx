@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Search, SlidersHorizontal, ChevronDown } from "lucide-react";
 import Modal from "../components/Modals/index";
 import GenericTable from "../components/Table/index";
+import Pagination from "../components/Pagination/index";
 
 const TableLayout = ({
   title,
@@ -11,6 +12,7 @@ const TableLayout = ({
   loading = false,
   queryParams = { page: 1 },
   totalPages = 1,
+  currentPage = 1,
   onPageChange = () => {},
   onSearch = () => {},
   totalItems,
@@ -42,7 +44,7 @@ const TableLayout = ({
 
   return (
     <section
-      className="rounded-2xl border border-[#EFEFEF] bg-white px-5 py-6"
+      className="rounded-2xl border border-[#EFEFEF] bg-white px-5 py-6 max-w-full overflow-hidden"
       style={{ boxShadow: "0px 4px 6px 0px #00000024" }}
     >
       {/* ===== Top Bar ===== */}
@@ -105,14 +107,25 @@ const TableLayout = ({
       </div>
 
       {/* ===== Table ===== */}
-      <GenericTable columns={columns} data={data} loading={loading} stickyHeader />
+      <GenericTable
+        columns={columns}
+        data={data}
+        loading={loading}
+        stickyHeader
+      />
 
       {/* ===== Footer / Pagination row ===== */}
       <div className="flex flex-col items-start gap-3 md:justify-between md:items-center md:flex-row">
         <p className="pt-9 pb-3 text-sm font-semibold text-[#1D50AB]">
           {`Showing ${start}-${end} from ${totalItems ?? end} ${entityLabel}`}
         </p>
-        {/* Add Pagination component here when needed */}
+        {totalPages > 1 && (
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={onPageChange}
+          />
+        )}
       </div>
 
       <Modal />

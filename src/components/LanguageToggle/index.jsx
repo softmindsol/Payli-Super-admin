@@ -16,16 +16,32 @@ const LANGS = [
   // Add more languages as needed
 ];
 
-export default function LanguageToggle({ variant = "dropdown", className = "" }) {
+export default function LanguageToggle({
+  variant = "dropdown",
+  className = "",
+}) {
   // Get current language from localStorage or default to 'en'
-  const currentCode = localStorage.getItem("language") || "en";
+  const getCurrentLanguage = () => {
+    try {
+      return localStorage.getItem("language") || "en";
+    } catch (error) {
+      console.warn("Failed to access localStorage for language:", error);
+      return "en";
+    }
+  };
+
+  const currentCode = getCurrentLanguage();
   const current = LANGS.find((l) => currentCode.startsWith(l.code)) || LANGS[0];
 
   const [language, setLanguage] = useState(current);
 
   useEffect(() => {
     // Persist language in localStorage
-    localStorage.setItem("language", language.code);
+    try {
+      localStorage.setItem("language", language.code);
+    } catch (error) {
+      console.warn("Failed to set language in localStorage:", error);
+    }
   }, [language]);
 
   const changeLanguage = (lang) => {
@@ -53,7 +69,11 @@ export default function LanguageToggle({ variant = "dropdown", className = "" })
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="sm" className={`flex items-center gap-2 ${className}`}>
+        <Button
+          variant="outline"
+          size="sm"
+          className={`flex items-center gap-2 ${className}`}
+        >
           <span className="text-base">{language.flag}</span>
           <span className="hidden sm:inline">{language.label}</span>
           <span className="sm:hidden">{language.code.toUpperCase()}</span>

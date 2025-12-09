@@ -358,10 +358,14 @@ export class DomainHandler {
   clearDomainAuthData() {
     const currentInfo = this.extractTenantInfo();
 
-    localStorage.removeItem("accessToken");
-    localStorage.removeItem("refreshToken");
-    localStorage.removeItem("user");
-    sessionStorage.clear();
+    try {
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("refreshToken");
+      localStorage.removeItem("user");
+      sessionStorage.clear();
+    } catch (error) {
+      console.warn("Failed to clear storage:", error);
+    }
 
     const cookies = document.cookie.split(";");
     cookies.forEach(cookie => {

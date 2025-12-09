@@ -7,6 +7,7 @@ import { Error } from "@/assets/svgs";
  *
  * Props:
  * - subject: string             // e.g. "Receipt" (used in title & confirm button)
+ * - title?: string              // optional custom title (overrides "Delete {subject}")
  * - message?: string            // optional custom message
  * - onConfirm: () => Promise<any> | void
  * - onClose: () => void
@@ -15,6 +16,7 @@ import { Error } from "@/assets/svgs";
  */
 export default function WarningModal({
   subject = "Item",
+  title: customTitle,
   message,
   onConfirm,
   onClose,
@@ -23,7 +25,7 @@ export default function WarningModal({
 }) {
   const [isLoading, setIsLoading] = useState(false);
 
-  const title = `Delete ${subject}`;
+  const title = customTitle || `Delete ${subject}`;
   const body =
     message || `Are you sure you want to delete this ${subject.toLowerCase()}?`;
   const confirmLabel = confirmText || `Delete ${subject}`;
@@ -43,19 +45,18 @@ export default function WarningModal({
       role="dialog"
       aria-modal="true"
       aria-labelledby="warn-title"
-      className="w-full max-w-[520px] rounded-2xl bg-white "
+      className="w-full max-w-[520px] rounded-2xl bg-white p-6"
     >
       {/* Icon */}
       <div className="flex items-center justify-center w-12 h-12 mx-auto mb-3 rounded-full bg-red-50">
-        <img
-          src= {Error}
-          alt="Error"
-          className="w-[126px] max-w-[126px]"
-        />      
+        <img src={Error} alt="Error" className="w-[126px] max-w-[126px]" />
       </div>
 
       {/* Title & text */}
-      <h2 id="warn-title" className="text-center text-[18px] font-semibold text-[#2E2E2E]">
+      <h2
+        id="warn-title"
+        className="text-center text-[18px] font-semibold text-[#2E2E2E]"
+      >
         {title}
       </h2>
       <p className="mt-2 text-center text-[14px] text-[#545454]">{body}</p>

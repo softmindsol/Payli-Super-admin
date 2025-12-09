@@ -6,20 +6,31 @@ import { Outlet } from "react-router";
 import AppHeader from "./AppHeader";
 import Backdrop from "./Backdrop";
 import AppSidebar from "./AppSidebar";
+import ErrorBoundary from "../components/ErrorBoundary";
 
 const LayoutContent = () => {
-  const { isExpanded, isHovered, isMobileOpen } = useSidebar();
+  const { isExpanded, isHovered, isMobileOpen, isTablet } = useSidebar();
 
   return (
-    <div className="min-h-screen xl:flex">
+    <div className="min-h-screen xl:flex overflow-x-hidden">
       <div>
-        <AppSidebar />
+        <ErrorBoundary>
+          <AppSidebar />
+        </ErrorBoundary>
         <Backdrop />
       </div>
 
       <div
-        className={`flex-1 transition-all duration-300 ease-in-out ${
-          isExpanded || isHovered ? "lg:ml-[290px]" : "lg:ml-[90px]"
+        className={`flex-1 transition-all duration-300 ease-in-out overflow-x-hidden ${
+          isExpanded || isHovered
+            ? "lg:ml-[290px] xl:ml-[290px]"
+            : "lg:ml-[90px] xl:ml-[90px]"
+        } ${
+          isTablet && (isExpanded || isHovered)
+            ? "md:ml-[290px]"
+            : isTablet
+            ? "md:ml-[90px]"
+            : ""
         } ${isMobileOpen ? "ml-0" : ""}`}
       >
         <AppHeader />

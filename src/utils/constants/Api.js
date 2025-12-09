@@ -114,16 +114,20 @@ function handleLogoutCleanup() {
     });
 
     // Clean any potential residual storage items
-    const authKeys = Object.keys(localStorage).filter(
-      (key) =>
-        key.startsWith("auth_") ||
-        key.startsWith("user_") ||
-        key.includes("token") ||
-        key === "accessToken" ||
-        key === "refreshToken" ||
-        key === "user_id"
-    );
-    authKeys.forEach((key) => localStorage.removeItem(key));
+    try {
+      const authKeys = Object.keys(localStorage).filter(
+        (key) =>
+          key.startsWith("auth_") ||
+          key.startsWith("user_") ||
+          key.includes("token") ||
+          key === "accessToken" ||
+          key === "refreshToken" ||
+          key === "user_id"
+      );
+      authKeys.forEach((key) => localStorage.removeItem(key));
+    } catch (error) {
+      console.warn("Failed to clear auth keys from localStorage:", error);
+    }
 
     // Don't redirect immediately - let AuthProvider handle routing
     // The AuthProvider will detect isAuthenticated: false and handle redirect

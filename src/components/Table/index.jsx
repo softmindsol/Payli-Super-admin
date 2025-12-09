@@ -48,56 +48,72 @@ const GenericTable = ({
         </tr>
       ));
 
-  return (
-    <div className="relative">
-      <div className="overflow-x-auto overflow-y-visible">
-        <table className="w-full border-collapse">
-          <thead className={`${stickyHeader ? "sticky top-0 z-10" : ""}`}>
-            <tr className="bg-[#EFEFEF]">
-              {columns.map((col, idx) => {
-                const isSorted = sortKey === col.key;
-                return (
-                  <th
-                    key={idx}
-                    onClick={
-                      col.sortable ? () => handleSort(col.key) : undefined
-                    }
-                    className={`text-left text-[14px] font-semibold text-[#2E2E2E] px-5 py-2 ${
-                      col.sortable ? "cursor-pointer select-none" : ""
-                    } ${col?.headerClassName || ""}`}
-                    style={{ width: col.width }}
-                  >
-                    <div className="flex items-center justify-start gap-2">
-                      <span className="truncate">{col.label}</span>
-                      {col.sortable && isSorted && (
-                        <span className="text-xs">
-                          {sortOrder === "asc" ? "↑" : "↓"}
-                        </span>
-                      )}
-                    </div>
-                  </th>
-                );
-              })}
-            </tr>
-          </thead>
+  const tableMinWidth = columns.reduce((total, col) => {
+    const width = col.width ? parseInt(col.width.replace("px", "")) : 120;
+    return total + width;
+  }, 0);
 
-          <tbody className="text-sm text-[#2E2E2E]">
-            {loading ? (
-              renderSkeletonRows()
-            ) : sortedData.length > 0 ? (
-              sortedData.map((row, rIdx) => (
-                <tr
-                  key={rowKey(row, rIdx)}
-                  className={`transition-colors ${
-                    striped && rIdx % 2 ? "bg-[#FAFAFA]" : "bg-white"
-                  } hover:bg-[#F8F8F8]`}
+  return (
+    <div className="relative w-full overflow-x-auto overflow-y-visible">
+      <table
+        className="border-collapse"
+        style={{ minWidth: `${tableMinWidth}px`, width: "100%" }}
+      >
+        <thead className={`${stickyHeader ? "sticky top-0 z-10" : ""}`}>
+          <tr className="bg-[#EFEFEF]">
+            {columns.map((col, idx) => {
+              const isSorted = sortKey === col.key;
+              const isLastColumn = idx === columns.length - 1;
+              return (
+                <th
+                  key={idx}
+                  onClick={col.sortable ? () => handleSort(col.key) : undefined}
+                  className={`text-left text-[14px] font-semibold text-[#2E2E2E] px-5 py-2 ${
+                    col.sortable ? "cursor-pointer select-none" : ""
+                  } ${
+                    isLastColumn
+                      ? "sticky right-0 bg-[#EFEFEF] border-l border-[#E0E0E0]"
+                      : ""
+                  } ${col?.headerClassName || ""}`}
+                  style={{ width: col.width }}
                 >
-                  {columns.map((col, cIdx) => (
+                  <div className="flex items-center justify-start gap-2">
+                    <span className="truncate">{col.label}</span>
+                    {col.sortable && isSorted && (
+                      <span className="text-xs">
+                        {sortOrder === "asc" ? "↑" : "↓"}
+                      </span>
+                    )}
+                  </div>
+                </th>
+              );
+            })}
+          </tr>
+        </thead>
+
+        <tbody className="text-sm text-[#2E2E2E]">
+          {loading ? (
+            renderSkeletonRows()
+          ) : sortedData.length > 0 ? (
+            sortedData.map((row, rIdx) => (
+              <tr
+                key={rowKey(row, rIdx)}
+                className={`transition-colors ${
+                  striped && rIdx % 2 ? "bg-[#FAFAFA]" : "bg-white"
+                } hover:bg-[#F8F8F8]`}
+              >
+                {columns.map((col, cIdx) => {
+                  const isLastColumn = cIdx === columns.length - 1;
+                  return (
                     <td
                       key={`${rIdx}-${cIdx}`}
                       className={`px-5 py-4 border-b border-[#F0F0F0] ${
-                        col?.cellClassName || ""
-                      }`}
+                        isLastColumn
+                          ? `sticky right-0 ${
+                              striped && rIdx % 2 ? "bg-[#FAFAFA]" : "bg-white"
+                            } border-l border-[#F0F0F0]`
+                          : ""
+                      } ${col?.cellClassName || ""}`}
                       style={{ width: col.width }}
                       title={
                         col.render
@@ -115,22 +131,22 @@ const GenericTable = ({
                         </div>
                       )}
                     </td>
-                  ))}
-                </tr>
-              ))
-            ) : (
-              <tr>
-                <td
-                  colSpan={columns.length}
-                  className="px-5 py-10 text-center text-[#545454]"
-                >
-                  {emptyText}
-                </td>
+                  );
+                })}
               </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
+            ))
+          ) : (
+            <tr>
+              <td
+                colSpan={columns.length}
+                className="px-5 py-10 text-center text-[#545454]"
+              >
+                {emptyText}
+              </td>
+            </tr>
+          )}
+        </tbody>
+      </table>
     </div>
   );
 };

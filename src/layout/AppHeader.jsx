@@ -14,7 +14,7 @@ const AppHeader = () => {
   const inputRef = useRef(null);
 
   const handleToggle = () => {
-    if (window.innerWidth >= 1024) toggleSidebar();
+    if (window.innerWidth >= 768) toggleSidebar();
     else toggleMobileSidebar();
   };
 
@@ -46,7 +46,7 @@ const AppHeader = () => {
           <button
             onClick={handleToggle}
             aria-label="Toggle Sidebar"
-            className="items-center justify-center hidden text-gray-500 border border-gray-200 rounded-lg lg:flex h-11 w-11 dark:border-gray-800 dark:text-gray-400"
+            className="items-center justify-center hidden md:flex h-11 w-11 text-gray-500 border border-gray-200 rounded-lg dark:border-gray-800 dark:text-gray-400"
           >
             {/* hamburger / close */}
             {isMobileOpen ? (
@@ -142,8 +142,8 @@ const AppHeader = () => {
           <div className="flex items-center gap-2 2xsm:gap-3">
             {/* <ThemeToggleButton /> */}
             {/* <NotificationDropdown /> */}
-            <LocationSelector />
-            <LanguageToggle />
+            {/* <LocationSelector /> */}
+            {/* <LanguageToggle /> */}
           </div>
         </div>
       </div>

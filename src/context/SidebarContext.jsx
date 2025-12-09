@@ -14,15 +14,19 @@ export const SidebarProvider = ({ children }) => {
   const [isExpanded, setIsExpanded] = useState(true);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [isTablet, setIsTablet] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const [activeItem, setActiveItem] = useState(null);
   const [openSubmenu, setOpenSubmenu] = useState(null);
 
   useEffect(() => {
     const handleResize = () => {
-      const mobile = window.innerWidth < 768;
+      const width = window.innerWidth;
+      const mobile = width < 768;
+      const tablet = width >= 768 && width < 1024;
       setIsMobile(mobile);
-      if (!mobile) {
+      setIsTablet(tablet);
+      if (mobile) {
         setIsMobileOpen(false);
       }
     };
@@ -51,6 +55,8 @@ export const SidebarProvider = ({ children }) => {
       value={{
         isExpanded: isMobile ? false : isExpanded,
         isMobileOpen,
+        isTablet,
+        isMobile,
         isHovered,
         activeItem,
         openSubmenu,

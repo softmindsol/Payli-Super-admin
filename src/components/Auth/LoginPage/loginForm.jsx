@@ -7,7 +7,10 @@ import { Input } from "../../../components/ui/input";
 import SocialLogin from "../../../components/SocialLogin";
 import Divider from "../../../components/Divider";
 import RememberPassword from "../RememberPassword";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useLoginMutation } from "../../../features/api/apiSlice";
+import { useAuth } from "../../../context/AuthContext";
+import { toast } from "sonner";
 
 const LoginForm = () => {
   const [formData, setFormData] = useState({
@@ -16,8 +19,11 @@ const LoginForm = () => {
   });
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState({});
+
+  const [loginMutation, { isLoading }] = useLoginMutation();
+  const { login } = useAuth();
+  const navigate = useNavigate();
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -59,17 +65,20 @@ const LoginForm = () => {
 
     if (!validateForm()) return;
 
-    setIsLoading(true);
-
-    // Simulate API call
     try {
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-      console.log("Login attempt:", { ...formData, rememberMe });
-      // Handle successful login here
+      const result = await loginMutation(formData).unwrap();
+      // API response: { data: { user, accessToken, refreshToken } }
+      login(
+        result.data.accessToken,
+        result.data.refreshToken,
+        result.data.user
+      );
+      toast.success("Login successful!");
+      // Redirect to Clients page after login
+      navigate("/clients");
     } catch (error) {
       console.error("Login failed:", error);
-    } finally {
-      setIsLoading(false);
+      toast.error(error.data?.message || "Login failed");
     }
   };
 
@@ -185,8 +194,6 @@ const LoginForm = () => {
               )}
             </Button>
           </form>
-
-          
         </div>
       </div>
     </div>

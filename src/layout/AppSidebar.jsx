@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useSidebar } from "../context/SidebarContext";
 import SidebarWidget from "./SidebarWidget";
-import { MoreVertical } from "lucide-react"; // Import this
+import { MoreVertical, LogOut } from "lucide-react"; // Import this
 
 // ---- bring data/icons/logo from your other file ----
 import { UsersRound } from "lucide-react";
@@ -12,17 +12,42 @@ import { AiOutlineCreditCard } from "react-icons/ai";
 import { CiGlobe } from "react-icons/ci";
 import { IoCubeOutline } from "react-icons/io5";
 import { Logo } from "../assets/svgs"; // your Payli logo svg
+import { useGetMeQuery } from "../features/api/apiSlice";
+import { useAuth } from "../context/AuthContext";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "../components/ui/dropdown-menu";
 
 // Original "items" config (you can keep it in a separate file too)
 const items = [
-  { title: "Dashboard", url: "/dashboard", icon: MdOutlineDashboard },
-  { title: "Inventory", url: "/inventory", icon: GrCart },
+  // Temporarily commenting out Dashboard and Inventory as requested
+  // { title: "Dashboard", url: "/dashboard", icon: MdOutlineDashboard },
+  // { title: "Inventory", url: "/inventory", icon: GrCart },
   { title: "Clients", url: "/clients", icon: UsersRound },
 ];
 
 const AppSidebar = () => {
-  const { isExpanded, isMobileOpen, isHovered, setIsHovered } = useSidebar();
+  const {
+    isExpanded,
+    isMobileOpen,
+    isHovered,
+    setIsHovered,
+    isTablet,
+    isMobile,
+  } = useSidebar();
   const location = useLocation();
+  const navigate = useNavigate();
+  const { logout } = useAuth();
+
+  const { data: userData, isLoading: userLoading } = useGetMeQuery();
+
+  const handleLogout = () => {
+    logout();
+    navigate("/");
+  };
 
   // (Optional) if later you add submenus, these handle smooth expand/collapse
   const [openSubmenu, setOpenSubmenu] = useState(null);
@@ -42,8 +67,8 @@ const AppSidebar = () => {
   );
 
   const isActive = useCallback(
-    (path) => path && location.pathname === path,
-    [location.pathname]
+    (path) => path && location && location.pathname === path,
+    [location]
   );
 
   useEffect(() => {
@@ -87,9 +112,7 @@ const AppSidebar = () => {
         const active = isActive(nav.path);
         const hasSub = !!nav.subItems?.length;
 
-        const ItemIcon = nav.IconCmp
-          ? (props) => <nav.IconCmp {...props} />
-          : () => null;
+        const IconComponent = nav.IconCmp;
 
         return (
           <li key={nav.name}>
@@ -97,10 +120,26 @@ const AppSidebar = () => {
               <button
                 onClick={() => handleSubmenuToggle(index)}
                 className={`group w-full flex items-center gap-3 px-4 py-3 rounded-md transition
-                  ${openSubmenu?.index === index ? "bg-white text-[#0A285E] shadow" : "text-white/95 hover:bg-white/10"}
-                  ${!isExpanded && !isHovered ? "lg:justify-center" : "lg:justify-start"}`}
+                  ${
+                    openSubmenu?.index === index
+                      ? "bg-white text-[#0A285E] shadow"
+                      : "text-white/95 hover:bg-white/10"
+                  }
+                  ${
+                    !isExpanded && !isHovered
+                      ? "lg:justify-center"
+                      : "lg:justify-start"
+                  }`}
               >
-                <ItemIcon className={`${openSubmenu?.index === index ? "text-[#0A285E]" : "text-white"} w-5 h-5`} />
+                {IconComponent && (
+                  <IconComponent
+                    className={`${
+                      openSubmenu?.index === index
+                        ? "text-[#0A285E]"
+                        : "text-white"
+                    } w-5 h-5`}
+                  />
+                )}
                 {(isExpanded || isHovered || isMobileOpen) && (
                   <span className="text-sm font-medium">{nav.name}</span>
                 )}
@@ -112,9 +151,19 @@ const AppSidebar = () => {
                   target="_blank"
                   rel="noreferrer"
                   className={`group flex items-center gap-3 px-4 py-3 rounded-md transition
-                    ${active ? "bg-white text-[#0A285E] shadow" : "text-white/95 hover:bg-white/10"}`}
+                    ${
+                      active
+                        ? "bg-white text-[#0A285E] shadow"
+                        : "text-white/95 hover:bg-white/10"
+                    }`}
                 >
-                  <ItemIcon className={`${active ? "text-[#0A285E]" : "text-white"} w-5 h-5`} />
+                  {IconComponent && (
+                    <IconComponent
+                      className={`${
+                        active ? "text-[#0A285E]" : "text-white"
+                      } w-5 h-5`}
+                    />
+                  )}
                   {(isExpanded || isHovered || isMobileOpen) && (
                     <span className="text-sm font-medium">{nav.name}</span>
                   )}
@@ -123,9 +172,19 @@ const AppSidebar = () => {
                 <Link
                   to={nav.path}
                   className={`group flex items-center gap-3 px-4 py-3 rounded-md transition
-                    ${active ? "bg-white text-[#0A285E] shadow" : "text-white/95 hover:bg-white/10"}`}
+                    ${
+                      active
+                        ? "bg-white text-[#0A285E] shadow"
+                        : "text-white/95 hover:bg-white/10"
+                    }`}
                 >
-                  <ItemIcon className={`${active ? "text-[#0A285E]" : "text-white"} w-5 h-5`} />
+                  {IconComponent && (
+                    <IconComponent
+                      className={`${
+                        active ? "text-[#0A285E]" : "text-white"
+                      } w-5 h-5`}
+                    />
+                  )}
                   {(isExpanded || isHovered || isMobileOpen) && (
                     <span className="text-sm font-medium">{nav.name}</span>
                   )}
@@ -155,7 +214,11 @@ const AppSidebar = () => {
                         <Link
                           to={sub.path}
                           className={`flex items-center text-sm px-3 py-2 rounded-md
-                            ${subActive ? "bg-white/95 text-[#0A285E]" : "text-white/90 hover:bg-white/10"}`}
+                            ${
+                              subActive
+                                ? "bg-white/95 text-[#0A285E]"
+                                : "text-white/90 hover:bg-white/10"
+                            }`}
                         >
                           {sub.name}
                         </Link>
@@ -176,34 +239,54 @@ const AppSidebar = () => {
       className={`fixed mt-16 flex flex-col lg:mt-0 top-0 px-5 left-0
         bg-gradient-to-b from-[#1D50AB] to-[#0A285E] text-white
         h-screen transition-all duration-300 ease-in-out z-50 border-r border-white/10
-        ${isExpanded || isMobileOpen ? "w-[290px]" : isHovered ? "w-[290px]" : "w-[90px]"}
-        ${isMobileOpen ? "translate-x-0" : "-translate-x-full"}
+        ${isExpanded || isHovered ? "w-[290px]" : "w-[90px]"}
+        ${
+          isMobileOpen || (isTablet && isExpanded)
+            ? "translate-x-0"
+            : isTablet || isMobile
+            ? "-translate-x-full"
+            : "translate-x-0"
+        }
         lg:translate-x-0`}
-      onMouseEnter={() => !isExpanded && setIsHovered(true)}
+      onMouseEnter={() =>
+        !isExpanded && !isTablet && !isMobile && setIsHovered(true)
+      }
       onMouseLeave={() => setIsHovered(false)}
     >
       {/* Logo */}
-      <div className={`py-8 flex ${!isExpanded && !isHovered ? "lg:justify-center" : "justify-center"}`}>
+      <div
+        className={`py-8 flex ${
+          !isExpanded && !isHovered ? "lg:justify-center" : "justify-center"
+        }`}
+      >
         <Link to="/">
           <img className="max-w-[126px] w-full" src={Logo} alt="Payli-Logo" />
         </Link>
       </div>
 
-      <div className="flex flex-col overflow-y-auto duration-300 ease-linear no-scrollbar">
+      <div className="flex flex-col overflow-y-auto duration-300 ease-linear no-scrollbar flex-1">
         <nav className="mb-6">
           <h2
             className={`mb-4 text-xs uppercase flex leading-[20px] text-white/80
-              ${!isExpanded && !isHovered ? "lg:justify-center" : "justify-start"}`}
+              ${
+                !isExpanded && !isHovered
+                  ? "lg:justify-center"
+                  : "justify-start"
+              }`}
           >
-            {(isExpanded || isHovered || isMobileOpen) ? "Main Menu" : <IoCubeOutline className="size-6" />}
+            {isExpanded || isHovered || isMobileOpen ? (
+              "Main Menu"
+            ) : (
+              <IoCubeOutline className="size-6" />
+            )}
           </h2>
           {renderMenuItems()}
         </nav>
 
         {(isExpanded || isHovered || isMobileOpen) && <SidebarWidget />}
       </div>
-       {/* Bottom area (non-scroll) */}
-      <div className="px-5 pt-3 pb-5">
+      {/* Bottom area (non-scroll) */}
+      <div className="pt-3 pb-5">
         {(isExpanded || isHovered || isMobileOpen) && (
           <>
             {/* <div className="flex items-center gap-2 mb-3 text-white/90">
@@ -213,33 +296,64 @@ const AppSidebar = () => {
             <div className="h-px mb-3 bg-white/20" />
           </>
         )}
-      {/* Profile Section (added at the bottom) */}
-      <div className="px-5 pt-5 pb-3">
-        <div className="flex items-center gap-3">
-          {/* Placeholder for User Avatar */}
-          <div className="w-10 h-10 bg-gray-400 rounded-full"></div>
-          
-          {/* Placeholder for User Name */}
-          <div className="flex-1 min-w-0">
-            <div className="truncate text-[14px] font-semibold text-white">
-              John Doe
+        {/* Profile Section (added at the bottom) */}
+        <div className=" pt-5 pb-3">
+          <div className="flex items-center gap-2">
+            {/* User Avatar */}
+            <div className="w-10 h-10 bg-gray-400 rounded-full overflow-hidden">
+              {userData?.data?.profilePic ? (
+                <img
+                  src={`${import.meta.env.VITE_S3_BASE_URL}${
+                    userData.data.profilePic
+                  }`}
+                  alt="Profile"
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="w-full h-full bg-gray-400 flex items-center justify-center text-white text-sm">
+                  {userData?.data?.firstName?.[0] || "U"}
+                </div>
+              )}
             </div>
-            <div className="truncate text-[11px] text-white/75">
-              Admin
-            </div>
-          </div>
 
-          {/* More options (click to toggle menu) */}
-          <button
-            type="button"
-            className="p-1.5 rounded-full hover:bg-white/10 focus:outline-none"
-            aria-haspopup="menu"
-            aria-expanded={false}
-          >
-            <MoreVertical className="w-5 h-5 text-white" />
-          </button>
+            {/* User Name */}
+            <div className="flex-1 min-w-0">
+              <div className="truncate text-[14px] font-semibold text-white">
+                {userLoading ? "Loading..." : userData?.data?.name || "User"}
+              </div>
+              <div className="truncate text-[11px] text-white/75">
+                {userData?.data?.role || "Admin"}
+              </div>
+            </div>
+
+            {/* More options (click to toggle menu) */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button
+                  type="button"
+                  className="p-1.5 rounded-full hover:bg-white/10 focus:outline-none"
+                  aria-haspopup="menu"
+                  aria-expanded={false}
+                >
+                  <MoreVertical className="w-5 h-5 text-white" />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                side="top"
+                align="end"
+                className="w-48 bg-white border-gray-200 text-gray-900 z-[9999]"
+              >
+                <DropdownMenuItem
+                  onClick={handleLogout}
+                  className="cursor-pointer hover:bg-gray-100 focus:bg-gray-100"
+                >
+                  <LogOut className="w-4 h-4 mr-2" />
+                  Logout
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </div>
-      </div>
       </div>
     </aside>
   );
