@@ -11,7 +11,7 @@ import { GrCart } from "react-icons/gr";
 import { AiOutlineCreditCard } from "react-icons/ai";
 import { CiGlobe } from "react-icons/ci";
 import { IoCubeOutline } from "react-icons/io5";
-import { Logo } from "../assets/svgs"; // your Payli logo svg
+import { Logo, PLogo } from "../assets/svgs"; // your Payli logo svgs
 import { useGetMeQuery } from "../features/api/apiSlice";
 import { useAuth } from "../context/AuthContext";
 import {
@@ -103,6 +103,9 @@ const AppSidebar = () => {
       prev && prev.index === index ? null : { type: "main", index }
     );
   };
+
+  // Keep track if profile dropdown is open so we can maintain hover state
+  const [profileMenuOpen, setProfileMenuOpen] = useState(false);
 
   const isExternal = (url = "") => /^https?:\/\//i.test(url);
 
@@ -251,7 +254,10 @@ const AppSidebar = () => {
       onMouseEnter={() =>
         !isExpanded && !isTablet && !isMobile && setIsHovered(true)
       }
-      onMouseLeave={() => setIsHovered(false)}
+      onMouseLeave={() => {
+        // Only allow sidebar to close when the profile menu is not open
+        if (!profileMenuOpen) setIsHovered(false);
+      }}
     >
       {/* Logo */}
       <div
@@ -259,8 +265,35 @@ const AppSidebar = () => {
           !isExpanded && !isHovered ? "lg:justify-center" : "justify-center"
         }`}
       >
-        <Link to="/">
-          <img className="max-w-[126px] w-full" src={Logo} alt="Payli-Logo" />
+        <Link to="/" className="flex items-center justify-center">
+          <div
+            className={`relative overflow-hidden transition-all duration-300 flex items-center justify-center ${
+              !isExpanded && !isHovered
+                ? "w-[38px] h-[38px]"
+                : "w-[126px] h-[40px]"
+            }`}
+          >
+            {/* Full Logo for expanded */}
+            <img
+              src={Logo}
+              alt="Payli-Logo"
+              className={`absolute inset-0 w-full h-full object-contain transition-all duration-300 ease-in-out origin-center ${
+                isExpanded || isHovered
+                  ? "opacity-100 scale-100"
+                  : "opacity-0 scale-90"
+              }`}
+            />
+            {/* Compact Logo for collapsed */}
+            <img
+              src={PLogo}
+              alt="Payli-Compact-Logo"
+              className={`absolute inset-0 w-full h-full object-contain transition-all duration-300 ease-in-out origin-center ${
+                !isExpanded && !isHovered
+                  ? "opacity-100 scale-100"
+                  : "opacity-0 scale-90"
+              }`}
+            />
+          </div>
         </Link>
       </div>
 
@@ -277,7 +310,8 @@ const AppSidebar = () => {
             {isExpanded || isHovered || isMobileOpen ? (
               "Main Menu"
             ) : (
-              <IoCubeOutline className="size-6" />
+              // <IoCubeOutline className="size-6" />
+              <></>
             )}
           </h2>
           {renderMenuItems()}
@@ -317,41 +351,53 @@ const AppSidebar = () => {
             </div>
 
             {/* User Name */}
-            <div className="flex-1 min-w-0">
-              <div className="truncate text-[14px] font-semibold text-white">
-                {userLoading ? "Loading..." : userData?.data?.name || "User"}
-              </div>
-              <div className="truncate text-[11px] text-white/75">
-                {userData?.data?.role || "Admin"}
-              </div>
-            </div>
+            {(isExpanded || isHovered || isMobileOpen) && (
+              <>
+                <div className="flex-1 min-w-0">
+                  <div className="truncate text-[14px] font-semibold text-white">
+                    {userLoading
+                      ? "Loading..."
+                      : userData?.data?.name || "User"}
+                  </div>
+                  <div className="truncate text-[11px] text-white/75">
+                    {userData?.data?.role || "Admin"}
+                  </div>
+                </div>
 
-            {/* More options (click to toggle menu) */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button
-                  type="button"
-                  className="p-1.5 rounded-full hover:bg-white/10 focus:outline-none"
-                  aria-haspopup="menu"
-                  aria-expanded={false}
+                {/* More options (click to toggle menu) */}
+                <DropdownMenu
+                  open={profileMenuOpen}
+                  onOpenChange={(open) => {
+                    setProfileMenuOpen(open);
+                    if (open) setIsHovered(true);
+                  }}
                 >
-                  <MoreVertical className="w-5 h-5 text-white" />
-                </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent
-                side="top"
-                align="end"
-                className="w-48 bg-white border-gray-200 text-gray-900 z-[9999]"
-              >
-                <DropdownMenuItem
-                  onClick={handleLogout}
-                  className="cursor-pointer hover:bg-gray-100 focus:bg-gray-100"
-                >
-                  <LogOut className="w-4 h-4 mr-2" />
-                  Logout
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <button
+                      type="button"
+                      className="p-1.5 rounded-full hover:bg-white/10 focus:outline-none"
+                      aria-haspopup="menu"
+                      aria-expanded={false}
+                    >
+                      <MoreVertical className="w-5 h-5 text-white" />
+                    </button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent
+                    side="top"
+                    align="end"
+                    className="w-48 bg-white border-gray-200 text-gray-900 z-[9999]"
+                  >
+                    <DropdownMenuItem
+                      onClick={handleLogout}
+                      className="cursor-pointer hover:bg-gray-100 focus:bg-gray-100"
+                    >
+                      <LogOut className="w-4 h-4 mr-2" />
+                      Logout
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </>
+            )}
           </div>
         </div>
       </div>

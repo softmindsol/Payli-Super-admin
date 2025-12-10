@@ -45,7 +45,7 @@ export default function WarningModal({
       role="dialog"
       aria-modal="true"
       aria-labelledby="warn-title"
-      className="w-full max-w-[520px] rounded-2xl bg-white p-6"
+      className="w-full max-w-[520px] rounded-2xl bg-white"
     >
       {/* Icon */}
       <div className="flex items-center justify-center w-12 h-12 mx-auto mb-3 rounded-full bg-red-50">
@@ -67,7 +67,7 @@ export default function WarningModal({
           type="button"
           onClick={onClose}
           disabled={isLoading}
-          className="rounded-full border border-[#E5E7EB] bg-white px-6 py-2.5 text-[#2E2E2E] disabled:opacity-60"
+          className="rounded-full px-6 py-2.5 border border-[#E5E7EB] bg-white text-[#2E2E2E] disabled:opacity-60"
         >
           {cancelText}
         </button>

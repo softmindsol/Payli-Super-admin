@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 
 const RememberPassword = () => {
   const [rememberMe, setRememberMe] = useState(false);
@@ -21,13 +22,12 @@ const RememberPassword = () => {
           Remember Me
         </label>
       </div>
-      <a
-        href="/reset-password"
-        type="button"
+      <Link
+        to="/reset-password"
         className="lg:text-base text-sm text-[#1D50AB] hover:text-blue-500 hover:underline font-semibold"
       >
         Forgot Password?
-      </a>
+      </Link>
     </div>
   );
 };

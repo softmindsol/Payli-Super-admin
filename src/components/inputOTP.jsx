@@ -5,9 +5,9 @@ import {
   InputOTPGroup,
   InputOTPSlot,
 } from "@/components/ui/input-otp";
-export function InputOTPPattern() {
+export function InputOTPPattern({ onChange }) {
   return (
-    <InputOTP maxLength={6} pattern={REGEXP_ONLY_DIGITS}>
+    <InputOTP onChange={onChange} maxLength={6} pattern={REGEXP_ONLY_DIGITS}>
       <InputOTPGroup className="space-x-2">
         <InputOTPSlot index={0} />
         <InputOTPSlot index={1} />

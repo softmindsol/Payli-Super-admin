@@ -1,6 +1,7 @@
 import React, { useCallback, useMemo, useState, useEffect } from "react";
 import useDebounce from "../../../hooks/useDebounce";
 import ViewClientModal from "../../../components/Modals/ViewClientModal";
+import WarningModal from "../../../components/Modals/warning";
 import TableLayout from "../../../layout/TableLayout";
 import { Loader, Search as LucideSearch, X as LucideX } from "lucide-react";
 import { CLIENT_COLUMNS } from "./column";
@@ -43,31 +44,84 @@ export default function ClientsList() {
   }, [openModal, closeModal]);
 
   const onDelete = useCallback(
-    async (row) => {
-      if (window.confirm("Are you sure you want to delete this user?")) {
-        try {
-          await deleteUser(row.id).unwrap();
-          refetch();
-        } catch (err) {
-          console.error("Failed to delete user:", err);
-        }
-      }
+    (row) => {
+      openModal(
+        <WarningModal
+          subject="Client"
+          title="Delete Client"
+          message={`Are you sure you want to delete ${
+            row.name || "this client"
+          }? This action cannot be undone.`}
+          confirmText="Delete Client"
+          onConfirm={async () => {
+            try {
+              await deleteUser(row.id).unwrap();
+              refetch();
+            } catch (err) {
+              console.error("Failed to delete user:", err);
+              alert("Failed to delete client. Please try again.");
+            }
+          }}
+          onClose={closeModal}
+        />,
+        520
+      );
     },
-    [deleteUser, refetch]
+    [deleteUser, refetch, openModal, closeModal]
   );
 
   const onRevoke = useCallback(
-    async (row) => {
-      if (window.confirm("Are you sure you want to revoke this user?")) {
-        try {
-          await revokeUser(row.id).unwrap();
-          refetch();
-        } catch (err) {
-          console.error("Failed to revoke user:", err);
-        }
-      }
+    (row) => {
+      openModal(
+        <WarningModal
+          subject="Client Access"
+          title="Revoke Client Access"
+          message={`Are you sure you want to revoke access for ${
+            row.name || "this client"
+          }? They will no longer be able to use the platform.`}
+          confirmText="Revoke Access"
+          onConfirm={async () => {
+            try {
+              await revokeUser(row.id).unwrap();
+              refetch();
+            } catch (err) {
+              console.error("Failed to revoke user:", err);
+              alert("Failed to revoke client access. Please try again.");
+            }
+          }}
+          onClose={closeModal}
+        />,
+        520
+      );
     },
-    [revokeUser, refetch]
+    [revokeUser, refetch, openModal, closeModal]
+  );
+
+  const onContinueAccess = useCallback(
+    (row) => {
+      openModal(
+        <WarningModal
+          subject="Client Access"
+          title="Continue Client Access"
+          message={`Are you sure you want to continue access for ${
+            row.name || "this client"
+          }? They will be able to use the platform again.`}
+          confirmText="Continue Access"
+          onConfirm={async () => {
+            try {
+              await revokeUser(row.id).unwrap();
+              refetch();
+            } catch (err) {
+              console.error("Failed to continue access:", err);
+              alert("Failed to continue client access. Please try again.");
+            }
+          }}
+          onClose={closeModal}
+        />,
+        520
+      );
+    },
+    [revokeUser, refetch, openModal, closeModal]
   );
 
   const onView = useCallback(
@@ -110,12 +164,13 @@ export default function ClientsList() {
       tenant: user.tenant,
       businessType: user.tenant?.businessType,
       subdomain: user.tenant?.subdomain,
+      isTenantActive: user.isActive === true,
     }));
   }, [usersData]);
 
   const columns = useMemo(
-    () => CLIENT_COLUMNS({ onDelete, onView, onRevoke }),
-    [onDelete, onView, onRevoke]
+    () => CLIENT_COLUMNS({ onDelete, onView, onRevoke, onContinueAccess }),
+    [onDelete, onView, onRevoke, onContinueAccess]
   );
 
   // With server-side search, mappedData already reflects the search results

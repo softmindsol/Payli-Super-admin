@@ -12,6 +12,7 @@ import NewPassword from "../pages/Auth/CreateNewPassword/index";
 import OTP from "../pages/Auth/OTP/index";
 import PasswordResetSuccessful from "../pages/Auth/PasswordResetSuccessful/index";
 import InventoryManagement from "@/pages/SuperAdminDashboard/Inventory";
+import NotFound from "../pages/NotFound/index";
 import ProtectedRoute from "../components/ProtectedRoute";
 
 const routes = [
@@ -48,6 +49,10 @@ const routes = [
         path: PUBLIC_ROUTES.passwordResetSuccessful,
         element: <PasswordResetSuccessful />,
       },
+      {
+        path: PATHS.notFound,
+        element: <NotFound />,
+      },
     ],
   },
   // ---------- PRIVATE / PROTECTED ----------
@@ -62,6 +67,7 @@ const routes = [
       { path: PATHS.clients, element: <ClientsList /> },
       { path: PATHS.dashboard, element: <Dashboard /> },
       { path: PATHS.inventory, element: <InventoryManagement /> },
+      { path: PATHS.notFound, element: <NotFound /> },
     ],
   },
 ];

@@ -49,6 +49,35 @@ export const apiSlice = createApi({
                 params,
             }),
         }),
+        // Password reset flow for super-admin
+        requestResetPasswordOtp: builder.mutation({
+            query: (data) => ({
+                url: '/super-admin/request-reset-password-otp',
+                method: 'POST',
+                data,
+            }),
+        }),
+        resendPasswordResetOtp: builder.mutation({
+            query: (data) => ({
+                url: '/super-admin/resend-password-reset-otp',
+                method: 'POST',
+                data,
+            }),
+        }),
+        verifyResetPasswordOtp: builder.mutation({
+            query: (data) => ({
+                url: '/super-admin/verify-reset-password-otp',
+                method: 'POST',
+                data,
+            }),
+        }),
+        setNewPassword: builder.mutation({
+            query: (data) => ({
+                url: '/super-admin/set-new-password',
+                method: 'PATCH',
+                data,
+            }),
+        }),
         revokeUser: builder.mutation({
             query: (id) => ({
                 url: `/super-admin/user/${id}/revoke`,
@@ -64,4 +93,14 @@ export const apiSlice = createApi({
     }),
 });
 
-export const { useLoginMutation, useGetMeQuery, useGetUsersQuery, useRevokeUserMutation, useDeleteUserMutation } = apiSlice;
+export const {
+    useLoginMutation,
+    useGetMeQuery,
+    useGetUsersQuery,
+    useRevokeUserMutation,
+    useDeleteUserMutation,
+    useRequestResetPasswordOtpMutation,
+    useResendPasswordResetOtpMutation,
+    useVerifyResetPasswordOtpMutation,
+    useSetNewPasswordMutation,
+} = apiSlice;

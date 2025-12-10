@@ -1,11 +1,16 @@
 import React from "react";
 import { Badge } from "@/components/ui/badge";
-import { MoreVertical, Eye } from "lucide-react";
+import { MoreVertical } from "lucide-react";
 import { createPortal } from "react-dom";
 
 const get = (row, path) => path.split(".").reduce((o, k) => o?.[k], row);
 
-export const CLIENT_COLUMNS = ({ onDelete, onView, onRevoke }) => [
+export const CLIENT_COLUMNS = ({
+  onDelete,
+  onView,
+  onRevoke,
+  onContinueAccess,
+}) => [
   {
     key: "#",
     label: "#",
@@ -46,8 +51,6 @@ export const CLIENT_COLUMNS = ({ onDelete, onView, onRevoke }) => [
       );
     },
   },
-  { key: "webshopDomain", label: "Webshop Domain", width: "200px" },
-  { key: "businessRegion", label: "Business Region", width: "160px" },
   {
     key: "status",
     label: "Status",
@@ -61,6 +64,9 @@ export const CLIENT_COLUMNS = ({ onDelete, onView, onRevoke }) => [
       );
     },
   },
+  { key: "webshopDomain", label: "Webshop Domain", width: "200px" },
+  { key: "businessRegion", label: "Business Region", width: "160px" },
+
   {
     key: "actions",
     label: "Actions",
@@ -71,129 +77,141 @@ export const CLIENT_COLUMNS = ({ onDelete, onView, onRevoke }) => [
         onDelete={onDelete}
         onView={onView}
         onRevoke={onRevoke}
+        onContinueAccess={onContinueAccess}
       />
     ),
   },
 ];
 
-/* ----- Row actions with portal menu (reuse Inventory menu style) ----- */
-const ActionsMenuPortal = ({
-  anchorRect,
-  onClose,
-  onView,
-  onEdit,
-  onDelete,
-  onRevoke,
-  row,
-}) => {
-  if (!anchorRect) return null;
-  const style = {
-    position: "fixed",
-    top: `${anchorRect.bottom + 6}px`,
-    left: `${Math.max(anchorRect.right - 180, 8)}px`,
-    zIndex: 1000,
+/* ----- Row actions with dropdown menu ----- */
+const RowActions = ({ row, onDelete, onView, onRevoke, onContinueAccess }) => {
+  const [isOpen, setIsOpen] = React.useState(false);
+  const [position, setPosition] = React.useState({ top: 0, left: 0 });
+  const dropdownRef = React.useRef(null);
+  const buttonRef = React.useRef(null);
+
+  // Check if tenant is active (if inactive, access is revoked)
+  const isTenantActive = row.isTenantActive === true;
+
+  // Close dropdown when clicking outside
+  React.useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target) &&
+        buttonRef.current &&
+        !buttonRef.current.contains(event.target)
+      ) {
+        setIsOpen(false);
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+      document.addEventListener("touchstart", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("touchstart", handleClickOutside);
+    };
+  }, [isOpen]);
+
+  // Calculate position when opening
+  const handleToggle = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (!isOpen && buttonRef.current) {
+      const rect = buttonRef.current.getBoundingClientRect();
+      const dropdownWidth = 176;
+      const dropdownHeight = 180;
+
+      // Position below the button, aligned to the right
+      let top = rect.bottom + 4;
+      let left = rect.right - dropdownWidth;
+
+      // Adjust if dropdown would go off screen
+      if (left < 8) left = 8;
+      if (top + dropdownHeight > window.innerHeight) {
+        top = rect.top - dropdownHeight - 4;
+      }
+
+      setPosition({ top, left });
+    }
+
+    setIsOpen(!isOpen);
   };
-  const Item = ({ onClick, children, className }) => (
+
+  const handleAction = (callback) => {
+    setIsOpen(false);
+    if (callback) {
+      callback(row);
+    }
+  };
+
+  const MenuItem = ({ onClick, children, className = "" }) => (
     <button
-      onClick={onClick}
-      className={`w-full text-left px-4 py-2.5 text-sm hover:bg-[#E9F0FF] ${
-        className || "text-[#0A285E]"
-      }`}
+      type="button"
+      onClick={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        onClick();
+      }}
+      className={`w-full text-left px-4 py-2.5 text-sm transition-colors hover:bg-[#E9F0FF] ${className}`}
     >
       {children}
     </button>
   );
-  return createPortal(
+
+  const dropdownMenu = isOpen ? (
     <div
-      style={style}
-      className="w-44 overflow-hidden rounded-xl bg-white shadow-[0_12px_24px_rgba(0,0,0,0.18)] ring-1 ring-black/5"
+      ref={dropdownRef}
+      className="fixed w-44 bg-white rounded-xl shadow-[0_12px_24px_rgba(0,0,0,0.18)] ring-1 ring-black/5 overflow-hidden"
+      style={{
+        top: `${position.top}px`,
+        left: `${position.left}px`,
+        zIndex: 9999,
+        minWidth: "176px",
+      }}
     >
-      <Item
-        onClick={() => {
-          onClose?.();
-          onView?.(row);
-        }}
-      >
+      <MenuItem onClick={() => handleAction(onView)} className="text-[#0A285E]">
         View
-      </Item>
-      <Item
-        onClick={() => {
-          onClose?.();
-          onEdit?.(row);
-        }}
-      >
-        Edit
-      </Item>
-      <Item
-        className="text-red-600"
-        onClick={() => {
-          onClose?.();
-          onRevoke?.(row);
-        }}
-      >
-        Revoke
-      </Item>
-      <Item
-        className="text-red-600"
-        onClick={() => {
-          onClose?.();
-          onDelete?.(row);
-        }}
-      >
+      </MenuItem>
+      {isTenantActive ? (
+        <MenuItem
+          onClick={() => handleAction(onRevoke)}
+          className="text-red-600"
+        >
+          Revoke Access
+        </MenuItem>
+      ) : (
+        <MenuItem
+          onClick={() => handleAction(onContinueAccess)}
+          className="text-green-600"
+        >
+          Continue Access
+        </MenuItem>
+      )}
+      <MenuItem onClick={() => handleAction(onDelete)} className="text-red-600">
         Delete
-      </Item>
-    </div>,
-    document.body
-  );
-};
-
-const RowActions = ({ row, onDelete, onView, onRevoke }) => {
-  const btnRef = React.useRef(null);
-  const [open, setOpen] = React.useState(false);
-  const [rect, setRect] = React.useState(null);
-
-  React.useEffect(() => {
-    const onDocClick = (e) => {
-      if (!btnRef.current) return;
-      if (!btnRef.current.contains(e.target)) setOpen(false);
-    };
-    document.addEventListener("mousedown", onDocClick);
-    return () => document.removeEventListener("mousedown", onDocClick);
-  }, []);
-
-  React.useEffect(() => {
-    if (open && btnRef.current) setRect(btnRef.current.getBoundingClientRect());
-  }, [open]);
+      </MenuItem>
+    </div>
+  ) : null;
 
   return (
     <>
       <button
-        onClick={() => onView?.(row)}
-        className="p-2 rounded-full hover:bg-gray-100 mr-1"
-        title="View details"
-      >
-        <Eye className="w-5 h-5 text-[#2E2E2E]" />
-      </button>
-      <button
-        ref={btnRef}
-        onClick={() => setOpen((v) => !v)}
-        className="p-2 rounded-full hover:bg-gray-100"
-        aria-haspopup="menu"
-        aria-expanded={open}
+        ref={buttonRef}
+        type="button"
+        onClick={handleToggle}
+        className="p-2 rounded-full hover:bg-gray-100 transition-colors"
+        aria-haspopup="true"
+        aria-expanded={isOpen}
       >
         <MoreVertical className="w-5 h-5 text-[#2E2E2E]" />
       </button>
-      {open && (
-        <ActionsMenuPortal
-          anchorRect={rect}
-          row={row}
-          onClose={() => setOpen(false)}
-          onView={onView}
-          onEdit={() => console.log("edit", row)}
-          onDelete={onDelete}
-          onRevoke={onRevoke}
-        />
-      )}
+      {createPortal(dropdownMenu, document.body)}
     </>
   );
 };

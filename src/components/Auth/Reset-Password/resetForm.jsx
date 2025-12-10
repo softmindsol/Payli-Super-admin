@@ -1,4 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { toast } from "sonner";
+import { useRequestResetPasswordOtpMutation } from "@/features/api/apiSlice";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -8,7 +10,11 @@ import { LogoBlue } from "@/assets/svgs";
 export default function ResetPassword() {
   const [email, setEmail] = useState("");
   const navigate = useNavigate();
-  const [isLoading, setIsLoading] = useState(false);
+  const [requestResetOtp, { isLoading }] = useRequestResetPasswordOtpMutation();
+  useEffect(() => {
+    const storedEmail = sessionStorage.getItem("resetEmail");
+    if (storedEmail) setEmail(storedEmail);
+  }, []);
 
   const handleBack = () => {
     navigate("/"); // Go back to the previous page
@@ -16,18 +22,20 @@ export default function ResetPassword() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    setIsLoading(true);
-
-    // Simulate API call
-    try {
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-      // Handle successful login here
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setIsLoading(false);
+    if (!email) {
+      return toast.error("Please enter an email address");
     }
-    navigate("/otp-verification");
+
+    try {
+      const response = await requestResetOtp({ email }).unwrap();
+      // store email in sessionStorage to resume if page reloads
+      sessionStorage.setItem("resetEmail", email);
+      toast.success(response?.message || "OTP sent to your email");
+      navigate(`/otp?email=${encodeURIComponent(email)}`);
+    } catch (error) {
+      console.error("Request failed", error);
+      toast.error(error.data?.message || error.message || "Failed to send OTP");
+    }
   };
 
   return (

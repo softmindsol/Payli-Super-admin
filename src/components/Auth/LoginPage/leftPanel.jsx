@@ -10,7 +10,6 @@ const LeftPanel = () => {
           alt="Background"
           className="object-cover w-full h-full overflow-visible"
         />
-        {/* Overlay for better text readability */}
       </div>
 
       {/* Content Overlay */}
@@ -34,7 +33,7 @@ const LeftPanel = () => {
 
         {/* Bottom Quote/Testimonial */}
         <div className="text-center">
-          <span className="mt-4 text-[22px]">payli.com</span>
+          <span className="mt-4 text-[22px]">payli.be</span>
         </div>
       </div>
     </div>

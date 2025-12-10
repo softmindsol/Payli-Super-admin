@@ -1,7 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Eye, EyeOff, ArrowRight, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
+import { useSetNewPasswordMutation } from "@/features/api/apiSlice";
+import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { LogoBlue } from "@/assets/svgs";
 import { CgSpinnerAlt } from "react-icons/cg";
@@ -10,6 +12,8 @@ export default function NewPassword() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [setNewPassword] = useSetNewPasswordMutation();
+  const location = useLocation();
 
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
@@ -95,10 +99,24 @@ export default function NewPassword() {
     // No errors: proceed with async action
     try {
       setIsLoading(true);
-      await new Promise((resolve) => setTimeout(resolve, 2000)); // Simulate async task
+      const params = new URLSearchParams(location.search);
+      const email = params.get("email") || sessionStorage.getItem("resetEmail");
+      const otp = sessionStorage.getItem("resetOtp");
+      if (!email || !otp) {
+        toast.error("Missing reset context. Please retry the flow.");
+        navigate("/reset-password");
+        return;
+      }
+      await setNewPassword({ email, otp, password }).unwrap();
+      // clear sessionStorage items used for reset flow
+      sessionStorage.removeItem("resetEmail");
+      sessionStorage.removeItem("resetOtp");
       navigate("/password-reset-successful");
     } catch (error) {
       console.error("Submission failed", error);
+      toast.error(
+        error.data?.message || error.message || "Failed to set new password"
+      );
     } finally {
       setIsLoading(false);
     }
@@ -114,7 +132,7 @@ export default function NewPassword() {
     );
   };
   const handleBack = () => {
-    navigate("/otp-verification"); // Go back to the previous page
+    navigate("/otp"); // Go back to the previous page
   };
 
   return (

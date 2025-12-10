@@ -13,8 +13,6 @@ const Modal = () => {
     noPadding = false,
   } = config || {};
 
-  console.log("Modal render:", { isOpen, hasContent: !!content, width });
-
   // Close on ESC
   useEffect(() => {
     if (!isOpen || !closeOnEsc) return;
