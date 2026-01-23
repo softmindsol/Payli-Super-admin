@@ -7,17 +7,20 @@ import EditCouponModal from "../../../components/Modals/EditCouponModal";
 import DeleteCouponModal from "../../../components/Modals/DeleteCouponModal";
 import CouponStatsModal from "../../../components/Modals/CouponStatsModal";
 import { useGetCouponsQuery } from "../../../features/api/apiSlice";
+import { Search as LucideSearch, X as LucideX } from "lucide-react";
+import useDebounce from "../../../hooks/useDebounce";
 
 const GRADIENT = "linear-gradient(90deg, #2196F3 -7.06%, #00338D 100%)";
 
 export default function CouponsManagement() {
   const [search, setSearch] = useState("");
+  const debouncedSearch = useDebounce(search, 400);
   const [filter, setFilter] = useState("all"); // all, active, expired, inactive
   const { openModal, closeModal } = useModal();
 
   // API query with search and filter params
   const { data, isLoading, error, refetch } = useGetCouponsQuery({
-    search: search.trim() || undefined,
+    search: debouncedSearch.trim() || undefined,
     active:
       filter === "active" ? true : filter === "inactive" ? false : undefined,
     expired: filter === "expired" ? true : undefined,
@@ -71,6 +74,7 @@ export default function CouponsManagement() {
 
   // Calculate statistics from real data
   const statistics = useMemo(() => {
+    const coupons = data?.data?.coupons || [];
     if (!Array.isArray(coupons)) {
       return {
         totalCoupons: 0,
@@ -103,7 +107,7 @@ export default function CouponsManagement() {
       totalRedemptions,
       totalDiscountGiven: totalDiscountGiven.toFixed(2),
     };
-  }, [coupons]);
+  }, [data]);
 
   return (
     <>
@@ -128,21 +132,29 @@ export default function CouponsManagement() {
             <span className="font-medium">Add Coupon</span>
           </button>
 
-          <div className="flex items-stretch rounded-full border border-[#E6E6E6] bg-white pl-3 pr-1 shadow-sm">
-            <div className="flex items-center pr-1 text-slate-600">🔍</div>
+          <div className="flex items-center rounded-full border border-[#E6E6E6] bg-white pr-0 shadow-sm overflow-hidden focus-within:ring-2 focus-within:ring-[#1E50A2]/30">
+            <div className="flex items-center px-3 text-slate-600">
+              <LucideSearch className="w-4 h-4" />
+            </div>
             <input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search coupons..."
-              className="h-10 w-[200px] rounded-full px-2 text-sm outline-none sm:w-[280px]"
+              className="h-10 flex-1 min-w-[200px] rounded-none px-2 text-sm outline-none bg-transparent sm:min-w-[320px]"
             />
-            <button
-              type="button"
-              className="px-5 py-2 text-sm font-semibold text-white rounded-full"
-              style={{ background: GRADIENT }}
-            >
-              Search
-            </button>
+            {search ? (
+              <button
+                type="button"
+                className="px-3 py-2 text-sm font-semibold text-[#1E50A2] rounded-r-full border-l border-[#E6E6E6] bg-transparent hover:bg-[#F8FAFC]"
+                onClick={() => setSearch("")}
+                aria-label="Clear search"
+                title="Clear search"
+              >
+                <LucideX className="w-4 h-4" />
+              </button>
+            ) : (
+              <></>
+            )}
           </div>
         </div>
       </div>

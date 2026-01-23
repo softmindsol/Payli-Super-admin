@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { getCookie, setCookie, deleteCookie } from "../utils/cookieUtils";
+import { isJWTExpired } from "../utils/tokenUtils";
 
 const AuthContext = createContext();
 
@@ -19,17 +20,34 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const checkAuth = () => {
       const token = getCookie("accessToken"); // Assuming token is stored in cookie
-      if (token) {
-        // You might want to validate the token here
+      if (token && !isJWTExpired(token)) {
+        // Token exists and is not expired
         setIsAuthenticated(true);
         // Set user data if available
       } else {
+        // Token is expired or doesn't exist
         setIsAuthenticated(false);
+        if (token && isJWTExpired(token)) {
+          // Clear expired token
+          deleteCookie("accessToken");
+          deleteCookie("refreshToken");
+        }
       }
       setLoading(false);
     };
 
     checkAuth();
+
+    // Check token expiration every minute
+    const interval = setInterval(() => {
+      const token = getCookie("accessToken");
+      if (token && isJWTExpired(token)) {
+        console.log("Token expired, logging out");
+        logout();
+      }
+    }, 60000); // Check every 60 seconds
+
+    return () => clearInterval(interval);
   }, []);
 
   const login = (token, refreshToken, userData) => {
