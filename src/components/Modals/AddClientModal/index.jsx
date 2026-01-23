@@ -1,20 +1,9 @@
 import React from "react";
-import { Formik, Form, Field, ErrorMessage } from "formik";
-import * as Yup from "yup";
-import { useModal } from "../../../context/modal";
+import { Formik, Form, Field } from "formik";
+import { useModal } from "@/context/modal";
 import { X } from "lucide-react";
 
 const GRADIENT = "linear-gradient(90deg, #B2F0E7 -7.06%, #C9DDF9 100%)";
-
-// ⬇️ Schema isi file me
-const Schema = Yup.object({
-  name: Yup.string().trim().required("Required"),
-  email: Yup.string().email("Invalid email").required("Required"),
-  phone: Yup.string().trim().required("Required"),
-  webshop: Yup.string().trim().required("Required"),
-  company: Yup.string().trim().required("Required"),
-  region: Yup.string().trim().required("Required"),
-});
 
 export default function AddClientModal({ onClose }) {
   const { closeModal } = useModal();
@@ -42,7 +31,6 @@ export default function AddClientModal({ onClose }) {
           company: "",
           region: "",
         }}
-        validationSchema={Schema}
         onSubmit={(values) => {
           console.log("Add client form:", values);
           closeModal();
@@ -63,9 +51,21 @@ export default function AddClientModal({ onClose }) {
                 label: "Phone Number",
                 placeholder: "+0123 456 789",
               },
-              { name: "webshop", label: "Webshop Name", placeholder: "Collebaut" },
-              { name: "company", label: "Company", placeholder: "Clothing Brand" },
-              { name: "region", label: "Business Region", placeholder: "Belgium" },
+              {
+                name: "webshop",
+                label: "Webshop Name",
+                placeholder: "Collebaut",
+              },
+              {
+                name: "company",
+                label: "Company",
+                placeholder: "Clothing Brand",
+              },
+              {
+                name: "region",
+                label: "Business Region",
+                placeholder: "Belgium",
+              },
             ].map((f) => (
               <div key={f.name}>
                 <label className="mb-1 block text-sm font-medium text-[#2E2E2E]">
@@ -76,11 +76,6 @@ export default function AddClientModal({ onClose }) {
                   name={f.name}
                   placeholder={f.placeholder}
                   className="w-full rounded-lg border border-[#E6E6E6] px-3 py-2.5 outline-none focus:ring-2 focus:ring-sky-300"
-                />
-                <ErrorMessage
-                  name={f.name}
-                  component="div"
-                  className="mt-1 text-sm text-red-600"
                 />
               </div>
             ))}
@@ -98,7 +93,10 @@ export default function AddClientModal({ onClose }) {
                 type="submit"
                 disabled={isSubmitting}
                 className="flex-1 rounded-full px-5 py-3 font-semibold text-[#1F2937]"
-                style={{ background: GRADIENT, boxShadow: "0px 4px 6px 0px #00000029" }}
+                style={{
+                  background: GRADIENT,
+                  boxShadow: "0px 4px 6px 0px #00000029",
+                }}
               >
                 Save Changes
               </button>

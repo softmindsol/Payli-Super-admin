@@ -1,6 +1,6 @@
 // src/components/Modals/index.jsx
 import { useEffect } from "react";
-import { useModal } from "../../context/modal";
+import { useModal } from "@/context/modal";
 
 const Modal = () => {
   const { isOpen, content, config, closeModal } = useModal();

@@ -90,6 +90,68 @@ export const apiSlice = createApi({
                 method: 'DELETE',
             }),
         }),
+        // Coupon management endpoints
+        getCoupons: builder.query({
+            query: (params = {}) => ({
+                url: '/coupons',
+                method: 'GET',
+                params,
+            }),
+            providesTags: ['Coupons'],
+        }),
+        getCouponById: builder.query({
+            query: (id) => ({
+                url: `/coupons/${id}`,
+                method: 'GET',
+            }),
+            providesTags: (result, error, id) => [{ type: 'Coupons', id }],
+        }),
+        createCoupon: builder.mutation({
+            query: (couponData) => ({
+                url: '/coupons',
+                method: 'POST',
+                data: couponData,
+            }),
+            invalidatesTags: ['Coupons'],
+        }),
+        updateCoupon: builder.mutation({
+            query: ({ id, ...updates }) => ({
+                url: `/coupons/${id}`,
+                method: 'PUT',
+                data: updates,
+            }),
+            invalidatesTags: (result, error, { id }) => [
+                { type: 'Coupons', id },
+                'Coupons',
+            ],
+        }),
+        deleteCoupon: builder.mutation({
+            query: (id) => ({
+                url: `/coupons/${id}`,
+                method: 'DELETE',
+            }),
+            invalidatesTags: ['Coupons'],
+        }),
+        getCouponStats: builder.query({
+            query: (id) => ({
+                url: `/coupons/${id}/stats`,
+                method: 'GET',
+            }),
+            providesTags: (result, error, id) => [{ type: 'CouponStats', id }],
+        }),
+        validateCoupon: builder.mutation({
+            query: (validationData) => ({
+                url: '/coupons/validate',
+                method: 'POST',
+                data: validationData,
+            }),
+        }),
+        getActiveCoupons: builder.query({
+            query: () => ({
+                url: '/coupons/active',
+                method: 'GET',
+            }),
+        }),
     }),
 });
 
@@ -103,4 +165,13 @@ export const {
     useResendPasswordResetOtpMutation,
     useVerifyResetPasswordOtpMutation,
     useSetNewPasswordMutation,
+    // Coupon hooks
+    useGetCouponsQuery,
+    useGetCouponByIdQuery,
+    useCreateCouponMutation,
+    useUpdateCouponMutation,
+    useDeleteCouponMutation,
+    useGetCouponStatsQuery,
+    useValidateCouponMutation,
+    useGetActiveCouponsQuery,
 } = apiSlice;

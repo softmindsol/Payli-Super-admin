@@ -1,7 +1,7 @@
 // src/components/Employees/EmployeeList.jsx
 import { useEffect, useRef, useState } from "react";
 import { MoreVertical, Plus } from "lucide-react";
-import { useModal } from "../../context/modal/index";
+import { useModal } from "@context/modal/index";
 import AddEmployeeForm from "../genericmodal/AddEmployeeForm";
 
 export default function EmployeeList({ rows, setRows, onViewAll }) {
@@ -40,7 +40,7 @@ export default function EmployeeList({ rows, setRows, onViewAll }) {
           setRows((prev) => [newRow, ...prev]);
           console.log("TABLE_INSERT:", newRow);
         }}
-      />
+      />,
     );
   };
 
