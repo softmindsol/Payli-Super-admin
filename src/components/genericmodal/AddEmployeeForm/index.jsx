@@ -1,28 +1,40 @@
 // src/components/genericmodal/AddEmployeeForm/index.jsx
-import { Formik, Form, Field, ErrorMessage } from "formik";
-import * as Yup from "yup";
-import { useModal } from "../../../context/modal/index";
+import { Formik, Form, Field } from "formik";
+import { useModal } from "@/context/modal/index";
 
 // Config -> fields render via map (same style as CreateOutletModal)
 const FIELDS = [
-  { name: "name",       label: "Name",           type: "text",    placeholder: "enter name",
-    yup: Yup.string().trim().required("Required") },
-  { name: "email",      label: "Email Address",  type: "email",   placeholder: "example@gmail.com",
-    yup: Yup.string().email("Invalid email").required("Required") },
-  { name: "phone",      label: "Phone Number",   type: "text",    placeholder: "+0123 456 789",
-    yup: Yup.string().trim().required("Required") },
-  { name: "role",       label: "Role",           type: "select",  options: ["Admin","Manager","Cashier"],
-    yup: Yup.string().required("Required") },
-  { name: "posAddress", label: "POS Address",    type: "text",    placeholder: "enter address",
-    yup: Yup.string().trim().required("Required") },
+  {
+    name: "name",
+    label: "Name",
+    type: "text",
+    placeholder: "enter name",
+  },
+  {
+    name: "email",
+    label: "Email Address",
+    type: "email",
+    placeholder: "example@gmail.com",
+  },
+  {
+    name: "phone",
+    label: "Phone Number",
+    type: "text",
+    placeholder: "+0123 456 789",
+  },
+  {
+    name: "role",
+    label: "Role",
+    type: "select",
+    options: ["Admin", "Manager", "Cashier"],
+  },
+  {
+    name: "posAddress",
+    label: "POS Address",
+    type: "text",
+    placeholder: "enter address",
+  },
 ];
-
-const schema = Yup.object(
-  FIELDS.reduce((acc, f) => {
-    acc[f.name] = f.yup || Yup.string().trim().required("Required");
-    return acc;
-  }, {})
-);
 
 export default function AddEmployeeForm({ onSubmit }) {
   const { closeModal } = useModal();
@@ -41,7 +53,6 @@ export default function AddEmployeeForm({ onSubmit }) {
 
       <Formik
         initialValues={initialValues}
-        validationSchema={schema}
         onSubmit={async (values, { setSubmitting, resetForm }) => {
           try {
             await onSubmit?.(values);
@@ -83,12 +94,6 @@ export default function AddEmployeeForm({ onSubmit }) {
                     className="w-full rounded-lg border border-[#EFEFEF] px-5 py-3 placeholder:text-[#545454] text-sm outline-none focus:ring-2 focus:ring-[#1D50AB]/30"
                   />
                 )}
-
-                <ErrorMessage
-                  name={f.name}
-                  component="div"
-                  className="mt-1 text-xs text-red-600"
-                />
               </div>
             ))}
 

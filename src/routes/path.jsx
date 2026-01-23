@@ -2,6 +2,7 @@ const PATHS = {
   clients: "/clients",
   dashboard: "/dashboard",
   inventory: "/inventory",
+  coupons: "/coupons",
   notFound: "*",
 };
 

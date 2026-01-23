@@ -1,5 +1,5 @@
-import LeftPanel from "../../../components/Auth/LoginPage/leftPanel"
-import LoginForm from "../../../components/Auth/LoginPage/loginForm"
+import LeftPanel from "../../../components/Auth/LoginPage/leftPanel";
+import LoginForm from "../../../components/Auth/LoginPage/loginForm";
 
 const LoginPage = () => {
   return (
@@ -8,10 +8,12 @@ const LoginPage = () => {
         <div className="hidden md:block w-full xl:max-w-[544px] lg:max-w-[400px]">
           <LeftPanel />
         </div>
-        <LoginForm />
+        <div className="m-auto">
+          <LoginForm />
+        </div>
       </div>
     </section>
-  )
-}
+  );
+};
 
-export default LoginPage
+export default LoginPage;

@@ -5,7 +5,7 @@ import WarningModal from "../../../components/Modals/warning";
 import TableLayout from "../../../layout/TableLayout";
 import { Loader, Search as LucideSearch, X as LucideX } from "lucide-react";
 import { CLIENT_COLUMNS } from "./column";
-import { useModal } from "../../../context/modal";
+import { useModal } from "@/context/modal";
 import AddClientModal from "../../../components/Modals/AddClientModal";
 import {
   useGetUsersQuery,
@@ -64,10 +64,10 @@ export default function ClientsList() {
           }}
           onClose={closeModal}
         />,
-        520
+        520,
       );
     },
-    [deleteUser, refetch, openModal, closeModal]
+    [deleteUser, refetch, openModal, closeModal],
   );
 
   const onRevoke = useCallback(
@@ -91,10 +91,10 @@ export default function ClientsList() {
           }}
           onClose={closeModal}
         />,
-        520
+        520,
       );
     },
-    [revokeUser, refetch, openModal, closeModal]
+    [revokeUser, refetch, openModal, closeModal],
   );
 
   const onContinueAccess = useCallback(
@@ -118,17 +118,17 @@ export default function ClientsList() {
           }}
           onClose={closeModal}
         />,
-        520
+        520,
       );
     },
-    [revokeUser, refetch, openModal, closeModal]
+    [revokeUser, refetch, openModal, closeModal],
   );
 
   const onView = useCallback(
     (row) => {
       openModal(<ViewClientModal onClose={closeModal} client={row} />, 720);
     },
-    [openModal, closeModal]
+    [openModal, closeModal],
   );
 
   const handlePageChange = useCallback((page) => {
@@ -170,7 +170,7 @@ export default function ClientsList() {
 
   const columns = useMemo(
     () => CLIENT_COLUMNS({ onDelete, onView, onRevoke, onContinueAccess }),
-    [onDelete, onView, onRevoke, onContinueAccess]
+    [onDelete, onView, onRevoke, onContinueAccess],
   );
 
   // With server-side search, mappedData already reflects the search results

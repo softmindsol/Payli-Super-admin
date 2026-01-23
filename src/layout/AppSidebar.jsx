@@ -5,7 +5,7 @@ import SidebarWidget from "./SidebarWidget";
 import { MoreVertical, LogOut } from "lucide-react"; // Import this
 
 // ---- bring data/icons/logo from your other file ----
-import { UsersRound } from "lucide-react";
+import { UsersRound, Tag } from "lucide-react";
 import { MdOutlineDashboard } from "react-icons/md";
 import { GrCart } from "react-icons/gr";
 import { AiOutlineCreditCard } from "react-icons/ai";
@@ -27,6 +27,7 @@ const items = [
   // { title: "Dashboard", url: "/dashboard", icon: MdOutlineDashboard },
   // { title: "Inventory", url: "/inventory", icon: GrCart },
   { title: "Clients", url: "/clients", icon: UsersRound },
+  { title: "Coupons", url: "/coupons", icon: Tag },
 ];
 
 const AppSidebar = () => {
@@ -63,12 +64,12 @@ const AppSidebar = () => {
         IconCmp: it.icon,
         // subItems: [] // keep for future
       })),
-    []
+    [],
   );
 
   const isActive = useCallback(
     (path) => path && location && location.pathname === path,
-    [location]
+    [location],
   );
 
   useEffect(() => {
@@ -100,7 +101,7 @@ const AppSidebar = () => {
 
   const handleSubmenuToggle = (index) => {
     setOpenSubmenu((prev) =>
-      prev && prev.index === index ? null : { type: "main", index }
+      prev && prev.index === index ? null : { type: "main", index },
     );
   };
 
@@ -247,8 +248,8 @@ const AppSidebar = () => {
           isMobileOpen || (isTablet && isExpanded)
             ? "translate-x-0"
             : isTablet || isMobile
-            ? "-translate-x-full"
-            : "translate-x-0"
+              ? "-translate-x-full"
+              : "translate-x-0"
         }
         lg:translate-x-0`}
       onMouseEnter={() =>

@@ -14,6 +14,7 @@ import PasswordResetSuccessful from "../pages/Auth/PasswordResetSuccessful/index
 import InventoryManagement from "@/pages/SuperAdminDashboard/Inventory";
 import NotFound from "../pages/NotFound/index";
 import ProtectedRoute from "../components/ProtectedRoute";
+import CouponsManagement from "@/pages/SuperAdminDashboard/Coupons";
 
 const routes = [
   // ---------- AUTH / PUBLIC ----------
@@ -68,6 +69,10 @@ const routes = [
       { path: PATHS.dashboard, element: <Dashboard /> },
       { path: PATHS.inventory, element: <InventoryManagement /> },
       { path: PATHS.notFound, element: <NotFound /> },
+      { path: PATHS.clients, element: <ClientsList /> },
+      { path: PATHS.dashboard, element: <Dashboard /> },
+      { path: PATHS.inventory, element: <InventoryManagement /> },
+      { path: PATHS.coupons, element: <CouponsManagement /> },
     ],
   },
 ];

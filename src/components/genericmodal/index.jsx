@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { useModal } from "../../context/modal/index";
+import { useModal } from "@/context/modal/index";
 
 const Modal = () => {
   const { isOpen, content, width, closeModal } = useModal();
